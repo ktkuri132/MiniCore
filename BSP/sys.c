@@ -88,21 +88,7 @@ void NVIC_Configuration(void)
 
 }
 
-#include <W25Q64/spiFlash.h>
 
-/// @brief 将数据送进备份区
-void PushBackup()
-{
-    #ifdef SPIFLASH_H
-        
-    #endif
-}
-
-/// @brief 将备份数据
-void ReadBackup()
-{
-    
-}
 
 /**
  * 

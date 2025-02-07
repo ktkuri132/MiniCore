@@ -135,3 +135,22 @@ void W25Q64_ReadData(uint32_t Address, uint8_t *DataArray, uint32_t Count)
 	Soft_SPI_Stop();								//SPI终止
 }
 
+
+void W25Q64_Set
+
+
+/// @brief 覆盖写入数据
+/// @param Address 起始地址
+/// @param DataArray 数据数组
+/// @param Count 大小
+void W25Q64_OverWriteData(uint32_t Address, uint8_t *DataArray, uint32_t Count)
+{
+	uint32_t i;
+	static uint8_t Temp[256];
+	W25Q64_ReadData(Address, Temp, 1);
+	if(Temp[0] == 0xff)
+	{
+		W25Q64_SectorErase(Address);
+	}
+	
+}

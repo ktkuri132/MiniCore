@@ -24,7 +24,7 @@ extern "C"
 	/// @brief 主函数运行完了自动复位
 	void BSP_Init()
 	{
-	Init_BSP: // 初始化基本外设
+	
 		bsp_usart_1_inti(115200);
 
 		// main();

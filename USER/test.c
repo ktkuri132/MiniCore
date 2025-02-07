@@ -10,13 +10,15 @@ void Test()
 
 	uint8_t MID;
 	uint16_t DID;
+	uint8_t a;
+    uint16_t b;
 	uint8_t DataArry[1] = {0x78};
 	W25Q64_ReadID(&MID, &DID);
 	// W25Q64_ReadData(0x00000000,&MID,1);
 	printf("MID:%d,DID:%d\n", MID, DID);
 	// W25Q64_PageProgram(0x00000000,DataArry,1);
 	W25Q64_ReadData(0x00000000, &MID, 1);
-	printf("MID:%x,DID:%d\n", MID, DID);
+	printf("MID:%x,DID:%d\n", a, b);
 	while (1)
 	{
 		
