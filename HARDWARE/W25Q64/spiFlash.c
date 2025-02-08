@@ -2,7 +2,7 @@
 #include <gpio/stm32f4xx_gpio.h>
 #include "spiFlash.h"
 #include <stdlib.h>
-
+#include <stdio.h>
 /**
  * 函    数：W25Q64初始化
  * 参    数：无
@@ -145,65 +145,62 @@ void W25Q64_ReadData(uint32_t Address, uint8_t *DataArray, uint32_t Count)
 	Soft_SPI_Stop(); // SPI终止
 }
 
-/// @brief 得到扇区的起始地址
-/// @param Address
+/// @brief 得到扇区的起始和结束地址
+/// @param Address 起始地址
+/// @param Count 写入长度
 static uint32_t *GetSectorStartAddress(uint32_t Address, uint32_t Count)
 {
-	uint32_t *StartAddressArry = (uint32_t *)malloc(256); // 最大跨越256个扇区的起始地址
-	const uint32_t SectorSize = 4 * 1024;				  // 每个扇4KB
-	uint32_t crossing = 0;								  // 跨越的扇区数量
-	uint32_t i = 0;
-AddrCheck:
-	for (i; i <= 0x7FFFFF; i += SectorSize) // 从i开始循环遍历所有扇区
-	{
-		if ((Address >= i) && (Address < i + SectorSize))
-		{
-			if (crossing)
-			{
-				if (StartAddressArry[crossing - 1] == i)	// 检查是否已经存在
-				{
-					goto Out;	// 相同,说明写入长度并未超过一个扇区大小
-				}
-				else
-				{
-					uint32_t j = i - StartAddressArry[crossing - 1];
-					j = j / 4*1024;
-					while(j--)
-					{
-						StartAddressArry[crossing] = StartAddressArry[crossing - 1] + 4*1024;
-						crossing++;
-					}
-					goto Out;
-				}
-			}
-			else
-			{
-				StartAddressArry[crossing] = i;
-				crossing++;
-			}
-		}
-	}
-	Address += Count;
-	goto AddrCheck;
-Out:
+	uint32_t *StartAddressArry = (uint32_t *)malloc(3);
+	uint8_t StartID = (Address / 4 * 1024) + 1;
+	uint8_t EndID = ((Address + Count) / 4 * 1024) + 1;
+	uint32_t StartAddress = StartID * 4 * 1024;
+	uint32_t EndAddress = EndID * 4 * 1024;
+	uint8_t SectorCount = EndID - StartID+1;
+	StartAddressArry[0] = SectorCount;
+	StartAddressArry[1] = StartAddress;
+	StartAddressArry[2] = EndAddress;
+	printf("StartID:%d,EndID:%d,SectorCount:%d\n", StartID, EndID, SectorCount);
 	return StartAddressArry;
 }
 
+/// @brief 严格写入数据,不破坏其他数据
+/// @param Address 起始地址
+/// @param DataArray 数据数组
+/// @param Count 写入长度
 void W25Q64_WriteData(uint32_t Address, uint8_t *DataArray, uint32_t Count)
 {
-	uint8_t *W25Q64_Sector_Cache = (uint8_t *)malloc(4 * 1024);
-	uint32_t StartAddress[] 
-	= GetSectorStartAddress(Address, Count);
-	W25Q64_ReadData(StartAddress, W25Q64_Sector_Cache, 4 * 1024);
-	uint32_t OffsetAddress = Address - StartAddress;
-	for (uint32_t i = 0; i < Count; i++)
+	uint8_t *W25Q64_Sector_Cache = (uint8_t *)malloc(4 * 1024);		// 申请4KB的缓存
+	uint32_t *StartAddress = GetSectorStartAddress(Address, Count); // 得到扇区的起始地址
+	uint8_t SectorCount = StartAddress[0];						// 得到扇区的数量
+	uint32_t SA = StartAddress[1];
+	uint32_t EA = StartAddress[2];
+	uint32_t m = 0;
+	for (uint8_t i = 1; i <= SectorCount; i++)
 	{
-		W25Q64_Sector_Cache[OffsetAddress + i] = DataArray[i];
+		W25Q64_ReadData(SA, W25Q64_Sector_Cache, 4 * 1024); // 读取4KB数据到缓存
+		for (uint32_t j = 0; j < 4 * 1024; j++)
+		{
+			if (DataArray[m] != W25Q64_Sector_Cache[j])
+			{
+				W25Q64_Sector_Cache[j] = DataArray[m];
+				m++;
+				if (m > Count)
+				{
+					W25Q64_SectorErase(SA);						   // 擦除扇区
+					W25Q64_SectorProgram(SA, W25Q64_Sector_Cache); // 编程扇区
+					free(W25Q64_Sector_Cache);
+					free(StartAddress);
+					return;
+				}
+			}
+		}
+		W25Q64_SectorErase(SA);						   // 擦除扇区
+		W25Q64_SectorProgram(SA, W25Q64_Sector_Cache); // 编程扇区
+		SA += 4 * 1024;								   // 下一个扇区
 	}
-	W25Q64_SectorErase(StartAddress);
-	W25Q64_SectorProgram(StartAddress, W25Q64_Sector_Cache);
 	free(W25Q64_Sector_Cache);
 	free(StartAddress);
+	return;
 }
 
 /// @brief 覆盖写入数据
@@ -212,11 +209,14 @@ void W25Q64_WriteData(uint32_t Address, uint8_t *DataArray, uint32_t Count)
 /// @param Count 大小
 void W25Q64_OverWriteData(uint32_t Address, uint8_t *DataArray, uint32_t Count)
 {
-	uint32_t i;
-	static uint8_t Temp[256];
-	W25Q64_ReadData(Address, Temp, 1);
-	if (Temp[0] == 0xff)
+	uint32_t *StartAddress = GetSectorStartAddress(Address, Count); // 得到扇区的起始地址
+	uint8_t SectorCount = StartAddress[0];							// 得到扇区的数量
+	uint32_t SA = StartAddress[1];
+	for (uint8_t i = 1; i <= SectorCount; i++)
 	{
-		W25Q64_SectorErase(Address);
+		W25Q64_SectorErase(SA); // 擦除扇区
+		W25Q64_SectorProgram(SA, DataArray); // 编程扇区
+		SA += 4 * 1024;					   // 下一个扇区
 	}
+	free(StartAddress);
 }
