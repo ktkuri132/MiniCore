@@ -3,11 +3,23 @@
 //
 #include <stdio.h>
 #include <W25Q64/spiFlash.h>
+#include <BSP/usart/Serial.h>
+
+
+
+
+
+
 void Test()
 {
 
 	W25Q64_Init();
 
+	Stde_DataTypeDef Test = {
+		.Res_note = 0
+			
+	};
+	
 	uint8_t MID;
 	uint16_t DID;
 	uint8_t DataArry[5] = {0x78,0x59,0x12,0x34,0x56};
@@ -24,9 +36,11 @@ void Test()
 
 	// W25Q64_ReadData(0x00000000, &DID, 1);
 	// printf("MID:%d,DID:%d\n", MID, DID);
+	printf("\033[2J\033[H");
 	W25Q64_WriteData(0x00000000, DataArry, 5);
 	W25Q64_ReadData(0x00000000, Data, 5);
-	printf("Data:%x,%x,%x,%x,%x\n", Data[0],Data[1],Data[2],Data[3],Data[4]);
+	printf("Data:%x,%x,%x,%x,%x,%x,%x,%x\n", Data[0],Data[1],Data[2],Data[3],Data[4],Data[5],Data[6],Data[7]);
+
 	while (1)
 	{
 	}
