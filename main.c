@@ -5,10 +5,9 @@ extern "C"
 #endif
 
 #include <sys.h>
-#include "usart/Serial.h"
+#include <usart/Serial.h>
 #include "usart/usart.h"
-#include "OLED/OLED.h"
-#include "MPU6050/inv_mpu.h"
+
 #include <W25Q64/spiFlash.h>
 
 	// 定义串口数据结构

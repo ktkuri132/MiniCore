@@ -193,7 +193,6 @@ void W25Q64_WriteData(uint32_t Address, uint8_t *DataArray, uint32_t Count)
 					W25Q64_SectorErase(StartAddress);						   // 擦除扇区
 					W25Q64_SectorProgram(StartAddress, W25Q64_Sector_Cache); // 编程扇区
 					free(W25Q64_Sector_Cache);
-					free(StartAddress);
 					return;
 				}
 			}
@@ -203,7 +202,6 @@ void W25Q64_WriteData(uint32_t Address, uint8_t *DataArray, uint32_t Count)
 		StartAddress += 4 * 1024;								   // 下一个扇区
 	}
 	free(W25Q64_Sector_Cache);
-	free(StartAddress);
 	return;
 }
 

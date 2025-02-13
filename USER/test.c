@@ -9,7 +9,6 @@
 
 
 
-
 void Test()
 {
 
@@ -19,7 +18,6 @@ void Test()
 		.Res_note = 0
 			
 	};
-	
 	uint8_t MID;
 	uint16_t DID;
 	uint8_t DataArry[5] = {0x78,0x59,0x12,0x34,0x56};

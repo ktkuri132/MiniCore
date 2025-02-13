@@ -3,6 +3,7 @@ set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_VERSION 1)
 cmake_minimum_required(VERSION 3.28)
 
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # 指定交叉编译工具链arm-none-eabi-gcc,添加到环境变量中,或者在此处直接指定绝对路径
@@ -28,8 +29,8 @@ add_link_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16)
 # 若不支持硬件浮点,则使用软件浮点
 #add_compile_options(-mfloat-abi=soft)
 
-# 指定芯片型号的相关编译选项
-add_compile_options(-mcpu=cortex-m4 -mthumb -mthumb-interwork)
+# 指定芯片型号的相关编译选项-mthumb-interwork
+add_compile_options(-mcpu=cortex-m4 -mthumb )
 add_compile_options(-ffunction-sections -fdata-sections -fno-common -fmessage-length=0)
 
 # 此处忽略C++17中的操作绝对地址(寄存器)的警告
@@ -63,9 +64,9 @@ add_subdirectory(USER)
 # 添加链接脚本
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/CORE/STM32F429IGTx_FLASH.ld)
 
-# 添加链接选项,生成map文件
+# 添加链接选项,生成map文件-mthumb-interwork
 add_link_options(-Wl,-gc-sections,--print-memory-usage,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map)
-add_link_options(-mcpu=cortex-m4 -mthumb -mthumb-interwork)
+add_link_options(-mcpu=cortex-m4 -mthumb )
 add_link_options(-T ${LINKER_SCRIPT})
 
 # 添加宏定义

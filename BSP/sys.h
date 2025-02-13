@@ -3,7 +3,6 @@
 
 #include "stm32f4xx.h"
 #include "gpio/gpio.h"
-#include "sys.h"
 
 #ifdef __LCD_GUI_
 // #include "gt9xxx.h"

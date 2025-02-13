@@ -323,6 +323,11 @@ __STATIC_INLINE void __set_FPSCR(uint32_t fpscr)
 #elif defined ( __GNUC__ ) /*------------------ GNU Compiler ---------------------*/
 /* GNU gcc specific functions */
 
+
+#if !defined (__clang__)
+
+
+
 /** \brief  Enable IRQ Interrupts
 
   This function enables IRQ interrupts by clearing the I-bit in the CPSR.
@@ -626,13 +631,14 @@ __attribute__( ( always_inline ) ) __STATIC_INLINE void __set_FPSCR(uint32_t fps
 #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
   /* Empty asm statement works as a scheduling barrier */
   __ASM volatile ("");
-  __ASM volatile ("VMSR fpscr, %0" : : "r" (fpscr) : "vfpcc");
+  // __ASM volatile ("VMSR fpscr, %0" : : "r" (fpscr) : "vfpcc");
   __ASM volatile ("");
 #endif
 }
 
 #endif /* (__CORTEX_M == 0x04) || (__CORTEX_M == 0x07) */
 
+#endif
 
 #elif defined ( __ICCARM__ ) /*------------------ ICC Compiler -------------------*/
 /* IAR iccarm specific functions */
