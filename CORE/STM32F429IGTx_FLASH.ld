@@ -88,12 +88,26 @@ SECTIONS
     *(.glue_7t)        /* glue thumb to arm code */
     *(.eh_frame)
 
+
     KEEP (*(.init))
     KEEP (*(.fini))
 
     . = ALIGN(4);
     _etext = .;        /* define a global symbols at end of code */
   } >FLASH
+
+  .ramfunc :
+  {
+    _sramfunc = .;
+    . = ALIGN(4);
+    *(.ramfunc)
+    *(.ramfunc*)
+
+   . = ALIGN(4);
+    _eramfunc = .;
+  } >RAM AT>FLASH
+
+
 
   /* Constant data goes into FLASH */
   .rodata :
@@ -194,6 +208,8 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM
+
+  
 
   /* external sram data, do not initialize at startup  */
    .ext_sdram (NOLOAD) :

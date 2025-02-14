@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include "main.h"
 #include <SDRAM/sdram.h>
+#include <stdint.h>
 extern void *_estack;
 
 void Reset_Handler();
@@ -1034,6 +1035,7 @@ void __libc_init_array();
 
 extern void *_sidata, *_sdata, *_edata;
 extern void *_sbss, *_ebss;
+extern void *_sramfunc, *_eramfunc,ramfunc;
 
 void __attribute__((naked, noreturn)) Reset_Handler()
 {
@@ -1050,6 +1052,14 @@ void __attribute__((naked, noreturn)) Reset_Handler()
 	for (pDest = &_sbss; pDest < &_ebss; pDest++)
 		*pDest = 0;
 
+	// Copy .ramfunc section from Flash to SRAM
+    // uint32_t *src = &_sramfunc;
+	// uint32_t *end = &_eramfunc;
+	// uint32_t *dst = (uint32_t*)0x20000000;
+    // while (src < &_eramfunc)
+    // {
+    //     *dst++ = *src++;
+    // } 
     SDRAM_Init();
 	SystemInit();
 	__libc_init_array();

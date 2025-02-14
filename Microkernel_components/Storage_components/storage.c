@@ -1,6 +1,6 @@
 
 #include "storage.h"
-
+#include <stdio.h>
 #include <W25Q64/spiFlash.h>
 /// @brief 存储初始化
 void storage_init()
