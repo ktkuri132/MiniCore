@@ -7,7 +7,7 @@ extern "C" {
 #include <sys.h>
 #include <usart/Serial.h>
 
-#include "usart/usart.h"
+#include <usart/usart.h>
 
 // 定义串口数据结构
 Stde_DataTypeDef USART2_DataBuff;
