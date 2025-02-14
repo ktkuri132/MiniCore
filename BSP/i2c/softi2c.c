@@ -1,4 +1,6 @@
-#include "softi2c.h"     // 此处定义片上软件IIC
+#include <softi2c.h>     // 此处定义片上软件IIC
+#include <stdio.h>
+#include <stm32f4xx_rcc.h>
 
 void delay_us(uint32_t nus)
 {

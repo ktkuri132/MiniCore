@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include "main.h"
 #include <SDRAM/sdram.h>
-#include <stdint.h>
 extern void *_estack;
 
 void Reset_Handler();
