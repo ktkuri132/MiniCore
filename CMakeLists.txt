@@ -58,7 +58,7 @@ endif ()
 # 添加子目录Cmake文件
 add_subdirectory(BSP)
 add_subdirectory(CORE)
-add_subdirectory(HARDWARE)
+add_subdirectory(device)
 add_subdirectory(USER)
 
 # 添加链接脚本
@@ -81,7 +81,7 @@ add_executable(${PROJECT_NAME}.elf main.c ${LINKER_SCRIPT})
 # target_compile_options(${PROJECT_NAME}.elf PRIVATE -W)
 
 # 将可执行文件链接项目其他库
-target_link_libraries(${PROJECT_NAME}.elf BSP_LIB CORE_LIB HARDWARE_LIB USER_LIB)
+target_link_libraries(${PROJECT_NAME}.elf BSP_LIB CORE_LIB device_LIB USER_LIB)
 
 set(ROOT_DIR ${CMAKE_SOURCE_DIR})
 
