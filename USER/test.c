@@ -16,7 +16,7 @@
 
 #define INRAM __attribute__((section(".ramfunc")))
 
-void INRAM test_func() {
+void  test_func() {
     while (1) {
         printf("test_func addr:%x\n", test_func);
     }

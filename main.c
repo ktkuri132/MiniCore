@@ -6,7 +6,6 @@ extern "C" {
 #include <W25Q64/spiFlash.h>
 #include <sys.h>
 #include <usart/Serial.h>
-
 #include "usart/usart.h"
 
 // 定义串口数据结构
